@@ -1,5 +1,5 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
+gem 'byebug'
 gem 'httparty'
 gem 'nokogiri'
-gem 'byebug'
