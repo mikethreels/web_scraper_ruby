@@ -1,7 +1,3 @@
-# frozen_string_literal: false
-
-# this file containes the class with all processes
-
 require 'nokogiri'
 require 'open-uri'
 
@@ -18,6 +14,7 @@ class ArticleProcess
     @number_pages = (@total_articles / @articles_per_page.to_f).ceil
   end
 
+  # this method selects the page from which the information is being pulled
   def next_page
     @count = 0
     page = 1
@@ -27,24 +24,69 @@ class ArticleProcess
       @pre_unprosessed_page = URI.open(@url)
       @pre_prosessed_page = Nokogiri::HTML(@pre_unprosessed_page)
       receive_data
-      p "retreiving page #{page}"
       page += 1
     end
     @all_arr
   end
 
+  # this method pulls the information from the page
   def receive_data
     @pre_prosessed_articles = @pre_prosessed_page.css('div.product-item__content')
     @pre_prosessed_articles.each do |book_article|
       book = {
         title: book_article.css('a.product-title').text,
         price: book_article.css('div.price-block__highlight').text.split.join(' ').gsub!(/\s/, ','),
-        availability: book_article.css('div.product-delivery-highlight').text,
+        availability: (if book_article.css('div.product-delivery-highlight').text.empty?
+                         'niet op voorraad'
+                       else
+                         book_article.css('div.product-delivery-highlight').text
+                       end),
         link: 'bol.com' + book_article.css('a')[0].attributes['href'].value
       }
 
       @all_arr[@count] = book
       @count += 1
+    end
+  end
+
+  # this method checks if the answer the user gave is between 1 and 5
+  def process_ans(ans)
+    until ans.to_i.between?(1, 5)
+      puts 'enter a number between 1 and 5'
+      ans = gets.chomp
+    end
+    ans
+  end
+
+  # this method checks if the answer the user gave equals 1
+  def ans_one(arr)
+    keys_to_extract = [:title]
+    arr.map do |w|
+      w.select { |k, _| keys_to_extract.include? k }
+    end
+  end
+
+  # this method checks if the answer the user gave equals 2
+  def ans_two(arr)
+    keys_to_extract = %i[title price]
+    arr.map do |w|
+      w.select { |k, _| keys_to_extract.include? k }
+    end
+  end
+
+  # this method checks if the answer the user gave equals 3
+  def ans_three(arr)
+    keys_to_extract = %i[title link]
+    arr.map do |w|
+      w.select { |k, _| keys_to_extract.include? k }
+    end
+  end
+
+  # this method checks if the answer the user gave equals 4
+  def ans_four(arr)
+    keys_to_extract = %i[title availability]
+    arr.map do |w|
+      w.select { |k, _| keys_to_extract.include? k }
     end
   end
 end
