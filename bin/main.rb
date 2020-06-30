@@ -2,12 +2,13 @@
 
 # !/usr/bin/env ruby
 
+require 'pp'
 require 'nokogiri'
 require 'httparty'
 require 'byebug'
 require_relative '../lib/process.rb'
 
-url = 'https://www.bol.com/nl/s/?page=1&searchtext=programmeren&view=list&N=8299'
+url = 'https://www.bol.com/nl/s/?page=1&searchtext=programmeren&view=list&filter_N=7289&N=8299&rating=all'
 web_data = ArticleProcess.new(url)
 
-p arr = web_data.receive_data
+pp arr = web_data.next_page
