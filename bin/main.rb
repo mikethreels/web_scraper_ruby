@@ -5,7 +5,9 @@ require 'nokogiri'
 require 'byebug'
 require_relative '../lib/process.rb'
 puts "\e[H\e[2J"
-puts "This scraper will get all the new programming books from a webpage called 'Bol.com' \nthis might take a moment..."
+puts "This scraper will get all the new programming books from a webpage called 'Bol.com'
+This might take a moment..."
+
 url = 'https://www.bol.com/nl/s/?page=1&searchtext=programmeren&view=list&filter_N=7289&N=8299&rating=all'
 web_data = ArticleProcess.new(url)
 arr = web_data.next_page

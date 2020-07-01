@@ -3,7 +3,7 @@ require 'open-uri'
 
 # all processes in this class will convert the html to readable string
 class ArticleProcess
-  attr_reader :unprosessed_page, :prosessed_page, :prosessed_articles
+  attr_reader :unprosessed_page, :prosessed_page, :prosessed_articles, :all_arr, :count
 
   def initialize(url)
     @unprosessed_page = URI.open(url)
@@ -12,25 +12,25 @@ class ArticleProcess
     @articles_per_page = @prosessed_articles.count
     @total_articles = prosessed_page.css('p.total-results').children.text.split(' ')[0].to_i
     @number_pages = (@total_articles / @articles_per_page.to_f).ceil
+    @all_arr = [{}]
+    @count = 0
   end
 
   # this method selects the page from which the information is being pulled and calls receive data method
   def next_page
-    @count = 0
-    page = 1
-    @all_arr = [{}]
-    while page <= @number_pages
-      @url = "https://www.bol.com/nl/s/?page=#{page}&searchtext=programmeren&view=list&filter_N=7289&N=8299&rating=all"
+    @page = 1
+    while @page <= @number_pages
+      @url = "https://www.bol.com/nl/s/?page=#{@page}&searchtext=programmeren&view=list&filter_N=7289&N=8299&rating=all"
       @pre_unprosessed_page = URI.open(@url)
       @pre_prosessed_page = Nokogiri::HTML(@pre_unprosessed_page)
       @pre_prosessed_articles = @pre_prosessed_page.css('div.product-item__content')
       receive_data(@pre_prosessed_articles)
-      page += 1
+      @page += 1
     end
     @all_arr
   end
 
-  # this method pulls the information from the page
+  # this method processes the information pulled from the page
   def receive_data(pre_prosessed_articles)
     pre_prosessed_articles.each do |book_article|
       book = {
