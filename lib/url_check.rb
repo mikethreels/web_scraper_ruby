@@ -5,9 +5,9 @@ module CheckUrl
   def self.check_url(url)
     test_url = url
     begin
-      unprosessed_page = URI.open(test_url)
+      URI.open(test_url)
       false
-    rescue StandardError => e
+    rescue StandardError
       puts 'Oops! wrong URL given'
       true
     end

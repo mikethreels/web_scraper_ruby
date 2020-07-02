@@ -59,19 +59,23 @@ describe ArticleProcess do
   describe '#ans_one' do
     context 'returns the title depending on the answer given by the user' do
       it 'returns the title of the first hash in the array of hashes' do
-        expect(web_data.ans_one(web_data.next_page, 1)[0]).to eql(check_arr.select { |k, _| [:title].include? k })
+        expect(web_data.ans_one(web_data.next_page, 1)[0])
+          .to eql(check_arr.select { |k, _| [:title].include? k })
       end
 
       it 'returns the price and title of the first hash in the array of hashes' do
-        expect(web_data.ans_one(web_data.next_page, 2)[0]).to eql(check_arr.select { |k, _| %i[price title].include? k })
+        expect(web_data.ans_one(web_data.next_page, 2)[0])
+          .to eql(check_arr.select { |k, _| %i[price title].include? k })
       end
 
       it 'returns the link and title of the first hash in the array of hashes' do
-        expect(web_data.ans_one(web_data.next_page, 3)[0]).to eql(check_arr.select { |k, _| %i[link title].include? k })
+        expect(web_data.ans_one(web_data.next_page, 3)[0])
+          .to eql(check_arr.select { |k, _| %i[link title].include? k })
       end
 
       it 'returns the availability and title of the first hash in the array of hashes' do
-        expect(web_data.ans_one(web_data.next_page, 4)[0]).to eql(check_arr.select { |k, _| %i[availability title].include? k })
+        expect(web_data.ans_one(web_data.next_page, 4)[0])
+          .to eql(check_arr.select { |k, _| %i[availability title].include? k })
       end
     end
   end

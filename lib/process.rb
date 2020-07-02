@@ -41,32 +41,20 @@ class ArticleProcess
 
   # this method checks which answer is given and returns the array which was selected
   def ans_one(arr, ans)
-    case ans
-    when 1
-      keys_to_extract = [:title]
-      arr.map do |w|
-        w.select { |k, _| keys_to_extract.include? k }
-      end
-    when 2
-      keys_to_extract = %i[title price]
-      arr.map do |w|
-        w.select { |k, _| keys_to_extract.include? k }
-      end
-    when 3
-      keys_to_extract = %i[title link]
-      arr.map do |w|
-        w.select { |k, _| keys_to_extract.include? k }
-      end
-    when 4
-      keys_to_extract = %i[title availability]
-      arr.map do |w|
-        w.select { |k, _| keys_to_extract.include? k }
-      end
-    else
-      keys_to_extract = %i[title price availability link]
-      arr.map do |w|
-        w.select { |k, _| keys_to_extract.include? k }
-      end
+    keys_to_extract = case ans
+                      when 1
+                        [:title]
+                      when 2
+                        %i[title price]
+                      when 3
+                        %i[title link]
+                      when 4
+                        %i[title availability]
+                      else
+                        %i[title price availability link]
+                      end
+    arr.map do |w|
+      w.select { |k, _| keys_to_extract.include? k }
     end
   end
 
@@ -90,5 +78,5 @@ class ArticleProcess
       @count += 1
     end
     @all_arr
- end
+  end
 end
