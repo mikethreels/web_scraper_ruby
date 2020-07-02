@@ -4,7 +4,13 @@
 
 ![screenshot](./images/app-screenshot.gif)
 
-This project scrapes the new arrived developer books from a webpage called 'Bol.com' and returns the articles as an array of hashes
+## Project description
+
+It checks if the URL which is given is still up to date and it will return an error and exit the code if it's not.
+When the URL has been checked and is correct the program will scrape the new arrived developer books from a webpage called 'Bol.com'.
+After getting the information it will look for the articles on the page and if there are more pages with results.
+It will get all the articles and return them requesting the user how they would like to view them.
+
 
 ## Built With
 
