@@ -7,10 +7,17 @@ describe ArticleProcess do
   let(:unprosessed_page) { URI.open(url) }
   let(:prosessed_page) { Nokogiri::HTML(unprosessed_page) }
   let(:prosessed_articles) { prosessed_page.css('div.product-item__content') }
+  let(:first_article) { prosessed_articles.first }
   let(:web_data) { ArticleProcess.new(url) }
   let(:check_arr) do
-    { title: 'FRONTEND PROGRAMMEREN', price: '37,95', availability: 'Op voorraad',
-      link: 'bol.com/nl/b/edu-actief/2959366/' }
+    { title: first_article.css('a.product-title').text,
+      price: first_article.css('div.price-block__highlight').text.split.join(' ').gsub!(/\s/, ','),
+      availability: (if first_article.css('div.product-delivery-highlight').text.empty?
+                       'niet op voorraad'
+                     else
+                       first_article.css('div.product-delivery-highlight').text
+                     end),
+      link: 'bol.com' + first_article.css('a')[0].attributes['href'].value }
   end
 
   describe '#next_page' do
@@ -28,11 +35,11 @@ describe ArticleProcess do
   describe '#receive_data' do
     context 'this method processes the information pulled from the page' do
       it 'check if the returned data is the right format' do
-        expect(web_data.receive_data(prosessed_articles)).to be_an_instance_of(Array)
+        expect(web_data.send(:receive_data, prosessed_articles)).to be_an_instance_of(Array)
       end
 
       it 'check if the returned data contains the right information' do
-        expect(web_data.receive_data(prosessed_articles).first).to eql(check_arr)
+        expect(web_data.send(:receive_data, prosessed_articles).first).to eql(check_arr)
       end
     end
   end
@@ -50,28 +57,22 @@ describe ArticleProcess do
   end
 
   describe '#ans_one' do
-    it 'returns the title of the first hash in the array of hashes' do
-      expect(web_data.ans_one(web_data.next_page)[0]).to eql({ title: 'FRONTEND PROGRAMMEREN' })
-    end
-  end
+    context 'returns the title depending on the answer given by the user' do
+      it 'returns the title of the first hash in the array of hashes' do
+        expect(web_data.ans_one(web_data.next_page, 1)[0]).to eql(check_arr.select { |k, _| [:title].include? k })
+      end
 
-  describe '#ans_two' do
-    it 'returns the title and price of the first hash in the array of hashes' do
-      expect(web_data.ans_two(web_data.next_page)[0]).to eql({ title: 'FRONTEND PROGRAMMEREN', price: '37,95' })
-    end
-  end
+      it 'returns the price and title of the first hash in the array of hashes' do
+        expect(web_data.ans_one(web_data.next_page, 2)[0]).to eql(check_arr.select { |k, _| %i[price title].include? k })
+      end
 
-  describe '#ans_three' do
-    it 'returns the title and link of the first hash in the array of hashes' do
-      expect(web_data.ans_three(web_data.next_page)[0]).to eql({ title: 'FRONTEND PROGRAMMEREN',
-                                                                 link: 'bol.com/nl/b/edu-actief/2959366/' })
-    end
-  end
+      it 'returns the link and title of the first hash in the array of hashes' do
+        expect(web_data.ans_one(web_data.next_page, 3)[0]).to eql(check_arr.select { |k, _| %i[link title].include? k })
+      end
 
-  describe '#ans_four' do
-    it 'returns the title and availability of the first hash in the array of hashes' do
-      expect(web_data.ans_four(web_data.next_page)[0]).to eql({ title: 'FRONTEND PROGRAMMEREN',
-                                                                availability: 'Op voorraad' })
+      it 'returns the availability and title of the first hash in the array of hashes' do
+        expect(web_data.ans_one(web_data.next_page, 4)[0]).to eql(check_arr.select { |k, _| %i[availability title].include? k })
+      end
     end
   end
 end

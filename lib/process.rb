@@ -3,14 +3,14 @@ require 'open-uri'
 
 # all processes in this class will convert the html to readable string
 class ArticleProcess
-  attr_reader :unprosessed_page, :prosessed_page, :prosessed_articles, :all_arr, :count
+  attr_reader :all_arr, :count
 
   def initialize(url)
     @unprosessed_page = URI.open(url)
     @prosessed_page = Nokogiri::HTML(@unprosessed_page)
     @prosessed_articles = @prosessed_page.css('div.product-item__content')
     @articles_per_page = @prosessed_articles.count
-    @total_articles = prosessed_page.css('p.total-results').children.text.split(' ')[0].to_i
+    @total_articles = @prosessed_page.css('p.total-results').children.text.split(' ')[0].to_i
     @number_pages = (@total_articles / @articles_per_page.to_f).ceil
     @all_arr = [{}]
     @count = 0
@@ -30,6 +30,48 @@ class ArticleProcess
     @all_arr
   end
 
+  # this method checks if the answer the user gave is between 1 and 5
+  def process_ans(ans)
+    until ans.to_i.between?(1, 5)
+      puts 'enter a number between 1 and 5'
+      ans = gets.chomp
+    end
+    ans
+  end
+
+  # this method checks which answer is given and returns the array which was selected
+  def ans_one(arr, ans)
+    case ans
+    when 1
+      keys_to_extract = [:title]
+      arr.map do |w|
+        w.select { |k, _| keys_to_extract.include? k }
+      end
+    when 2
+      keys_to_extract = %i[title price]
+      arr.map do |w|
+        w.select { |k, _| keys_to_extract.include? k }
+      end
+    when 3
+      keys_to_extract = %i[title link]
+      arr.map do |w|
+        w.select { |k, _| keys_to_extract.include? k }
+      end
+    when 4
+      keys_to_extract = %i[title availability]
+      arr.map do |w|
+        w.select { |k, _| keys_to_extract.include? k }
+      end
+    else
+      keys_to_extract = %i[title price availability link]
+      arr.map do |w|
+        w.select { |k, _| keys_to_extract.include? k }
+      end
+    end
+  end
+
+  private
+
   # this method processes the information pulled from the page
   def receive_data(pre_prosessed_articles)
     pre_prosessed_articles.each do |book_article|
@@ -48,46 +90,5 @@ class ArticleProcess
       @count += 1
     end
     @all_arr
-  end
-
-  # this method checks if the answer the user gave is between 1 and 5
-  def process_ans(ans)
-    until ans.to_i.between?(1, 5)
-      puts 'enter a number between 1 and 5'
-      ans = gets.chomp
-    end
-    ans
-  end
-
-  # this method checks if the answer the user gave equals 1
-  def ans_one(arr)
-    keys_to_extract = [:title]
-    arr.map do |w|
-      w.select { |k, _| keys_to_extract.include? k }
-    end
-  end
-
-  # this method checks if the answer the user gave equals 2
-  def ans_two(arr)
-    keys_to_extract = %i[title price]
-    arr.map do |w|
-      w.select { |k, _| keys_to_extract.include? k }
-    end
-  end
-
-  # this method checks if the answer the user gave equals 3
-  def ans_three(arr)
-    keys_to_extract = %i[title link]
-    arr.map do |w|
-      w.select { |k, _| keys_to_extract.include? k }
-    end
-  end
-
-  # this method checks if the answer the user gave equals 4
-  def ans_four(arr)
-    keys_to_extract = %i[title availability]
-    arr.map do |w|
-      w.select { |k, _| keys_to_extract.include? k }
-    end
-  end
+ end
 end
