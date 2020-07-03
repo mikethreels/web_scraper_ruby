@@ -1,5 +1,5 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem 'httparty'
+gem 'awesome_print'
 gem 'nokogiri'
-gem 'byebug'
+gem 'rspec'
